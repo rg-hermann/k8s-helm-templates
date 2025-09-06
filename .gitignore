@@ -1,0 +1,23 @@
+# Helm e Kubernetes
+charts/*/charts/
+charts/*/tmp/
+charts/*/*.tgz
+charts/*/Chart.lock
+
+# Arquivos temporários
+*.swp
+*.bak
+*.tmp
+*.log
+
+# Diretórios do sistema
+.DS_Store
+Thumbs.db
+
+# Editor/IDE
+.vscode/
+.idea/
+
+# Outros
+node_modules/
+.env

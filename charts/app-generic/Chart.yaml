@@ -1,0 +1,4 @@
+apiVersion: v2
+name: app-generic
+version: 0.1.0
+description: Chart genérico para deploy de aplicações containerizadas

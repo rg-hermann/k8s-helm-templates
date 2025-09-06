@@ -1,12 +1,10 @@
 # Helm Charts Templates
 
-Repositório central de Helm Charts para Kubernetes. Armazena templates reutilizáveis para deploy de aplicações em diferentes stacks (Java, Node.js, Python, etc). Permite padronizar, versionar e facilitar o uso de charts em múltiplos projetos, seja em ambientes locais ou em nuvem.
+Repositório central de Helm Charts para Kubernetes. Este projeto fornece um chart genérico (`app-generic`) para deploy de aplicações containerizadas, permitindo configuração flexível via `values.yaml` em cada aplicação.
 
 ## Estrutura
 
-- `charts/java-app/` - Chart para aplicações Java
-- `charts/node-app/` - Chart para aplicações Node.js
-- `charts/python-app/` - Chart para aplicações Python
+- `charts/app-generic/` - Chart genérico para qualquer stack (Java, Node.js, Python, etc)
 
 ## Features suportadas
 
@@ -14,20 +12,22 @@ Repositório central de Helm Charts para Kubernetes. Armazena templates reutiliz
 - Configuração de volumes persistentes (PVC)
 - Uso de Secrets e ConfigMaps
 - Configuração de Ingress
+- Recursos customizados
 
 ## Como usar
 
-1. Edite o arquivo `values.yaml` do chart desejado com os parâmetros da sua aplicação (imagem, porta, volumes, secrets, etc).
+1. No repositório da sua aplicação, crie um `values.yaml` com os parâmetros desejados (imagem, porta, volumes, secrets, etc).
 
 2. Renderize o template com Helm:
 
     ```sh
-    helm install <nome-release> ./charts/<app-type> -f ./charts/<app-type>/values.yaml
+    helm install <nome-release> <repo-k8s>/charts/app-generic -f <seu-repo>/values.yaml
     ```
 
 3. Exemplos de configuração:
 
 ### Volume Persistente
+
 ```yaml
 persistence:
    enabled: true
@@ -36,6 +36,7 @@ persistence:
 ```
 
 ### Secret
+
 ```yaml
 secret:
    enabled: true
@@ -45,6 +46,7 @@ secret:
 ```
 
 ### ConfigMap
+
 ```yaml
 configmap:
    enabled: true
@@ -54,6 +56,7 @@ configmap:
 ```
 
 ### Ingress
+
 ```yaml
 ingress:
    enabled: true
@@ -62,8 +65,8 @@ ingress:
 
 ## Personalização
 
-Adapte os templates conforme as necessidades do seu ambiente (storage, ingress, variáveis, etc). Os charts são flexíveis e podem ser estendidos para outros stacks.
+Adapte os templates conforme as necessidades do seu ambiente. O chart é flexível e pode ser estendido para outros stacks e recursos Kubernetes.
 
 ---
 
-Dúvidas ou sugestões? Edite este README ou adicione novos charts!
+Dúvidas ou sugestões? Edite este README ou contribua com novos templates!

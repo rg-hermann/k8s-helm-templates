@@ -2,9 +2,9 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ include "python-app.fullname" . }}-configmap
+  name: {{ include "app-generic.fullname" . }}-configmap
   labels:
-    app: {{ include "python-app.name" . }}
+    app: {{ include "app-generic.name" . }}
 data:
   {{- range $key, $value := .Values.configmap.data }}
   {{ $key }}: {{ $value | quote }}

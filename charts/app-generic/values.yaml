@@ -1,6 +1,6 @@
 replicaCount: 1
 image:
-  repository: <your-node-image>
+  repository: <your-image>
   tag: latest
 service:
   type: ClusterIP
@@ -18,3 +18,4 @@ secret:
 configmap:
   enabled: false
   data: {}
+resources: {}
