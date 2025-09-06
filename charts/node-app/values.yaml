@@ -1,0 +1,7 @@
+replicaCount: 1
+image:
+  repository: <your-node-image>
+  tag: latest
+service:
+  type: ClusterIP
+  port: 80
