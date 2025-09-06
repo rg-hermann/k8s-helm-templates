@@ -5,3 +5,16 @@ image:
 service:
   type: ClusterIP
   port: 80
+ingress:
+  enabled: false
+  host: ""
+persistence:
+  enabled: false
+  accessMode: ReadWriteOnce
+  size: 1Gi
+secret:
+  enabled: false
+  data: {}
+configmap:
+  enabled: false
+  data: {}
