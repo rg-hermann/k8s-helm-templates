@@ -1,0 +1,6 @@
+apiVersion: v2
+name: worker-template
+version: 0.1.0
+description: Template base para workers de processamento assíncrono
+maintainers:
+  - name: rg-hermann

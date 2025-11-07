@@ -1,0 +1,69 @@
+# Template padrão para aplicações frontend
+# Valores base que podem ser sobrescritos pela aplicação
+
+replicaCount: 1
+
+image:
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 80
+
+ingress:
+  enabled: true
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+  paths:
+    - path: /
+      pathType: Prefix
+
+resources:
+  limits:
+    cpu: "200m"
+    memory: "256Mi"
+  requests:
+    cpu: "100m"
+    memory: "128Mi"
+
+# Liveness e Readiness probes padrão para frontend
+livenessProbe:
+  httpGet:
+    path: /
+    port: http
+  initialDelaySeconds: 10
+  periodSeconds: 10
+
+readinessProbe:
+  httpGet:
+    path: /
+    port: http
+  initialDelaySeconds: 5
+  periodSeconds: 10
+
+# Configurações de auto-scaling
+autoscaling:
+  enabled: true
+  minReplicas: 1
+  maxReplicas: 3
+  targetCPUUtilizationPercentage: 80
+
+# Garantia de disponibilidade mínima
+podDisruptionBudget:
+  enabled: true
+  minAvailable: 1
+
+# Security context padrão
+securityContext:
+  runAsNonRoot: true
+  runAsUser: 1000
+  allowPrivilegeEscalation: false
+
+# Configurações de cache para assets estáticos
+nginx:
+  config:
+    clientMaxBodySize: "1m"
+    keepaliveTimeout: "65"
+    gzipTypes: "text/plain text/css application/javascript application/json application/x-javascript text/xml application/xml application/xml+rss text/javascript"
