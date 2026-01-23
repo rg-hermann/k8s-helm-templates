@@ -1,6 +1,0 @@
-apiVersion: v2
-name: database-template
-version: 0.1.0
-description: Template base para bancos de dados
-maintainers:
-  - name: rg-hermann
