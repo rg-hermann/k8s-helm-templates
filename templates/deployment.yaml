@@ -1,41 +1,83 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "app-generic.fullname" . }}
+  name: {{ include "k8s-helm-templates.fullname" . }}
+  labels:
+    {{- include "k8s-helm-templates.labels" . | nindent 4 }}
 spec:
-  replicas: {{ .Values.replicaCount }}
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount | default 1 }}
+  {{- end }}
   selector:
     matchLabels:
-      app: {{ include "app-generic.name" . }}
+      {{- include "k8s-helm-templates.selectorLabels" . | nindent 6 }}
   template:
     metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       labels:
-        app: {{ include "app-generic.name" . }}
+        {{- include "k8s-helm-templates.selectorLabels" . | nindent 8 }}
     spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "k8s-helm-templates.fullname" . }}
+      
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        fsGroup: 2000
+
       containers:
-        - name: app
-          image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy | default "IfNotPresent" }}
+          
+          envFrom:
+            {{- if .Values.config }}
+            - configMapRef:
+                name: {{ include "k8s-helm-templates.fullname" . }}
+            {{- end }}
+            {{- if .Values.secrets }}
+            - secretRef:
+                name: {{ include "k8s-helm-templates.fullname" . }}
+            {{- end }}
+
+          env:
+            {{- range $key, $value := .Values.env }}
+            - name: {{ $key }}
+              value: {{ $value | quote }}
+            {{- end }}
+
           ports:
-            - containerPort: {{ .Values.service.port }}
+            - name: http
+              containerPort: {{ .Values.service.port | default 8080 }}
+              protocol: TCP
+
+          livenessProbe:
+            httpGet:
+              path: /actuator/health/liveness
+              port: http
+            initialDelaySeconds: {{ .Values.probes.liveness.initialDelay | default 30 }}
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /actuator/health/readiness
+              port: http
+            initialDelaySeconds: {{ .Values.probes.readiness.initialDelay | default 20 }}
+            periodSeconds: 5
+
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
-          envFrom:
-            {{- if .Values.configmap.enabled }}
-            - configMapRef:
-                name: {{ include "app-generic.fullname" . }}-configmap
-            {{- end }}
-            {{- if .Values.secret.enabled }}
-            - secretRef:
-                name: {{ include "app-generic.fullname" . }}-secret
-            {{- end }}
-          volumeMounts:
-            {{- if .Values.persistence.enabled }}
-            - name: data
-              mountPath: /data
-            {{- end }}
-      volumes:
-        {{- if .Values.persistence.enabled }}
-        - name: data
-          persistentVolumeClaim:
-            claimName: {{ include "app-generic.fullname" . }}-pvc
-        {{- end }}
+
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            readOnlyRootFilesystem: false
+
+      terminationGracePeriodSeconds: 60

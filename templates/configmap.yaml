@@ -1,12 +1,10 @@
-{{- if .Values.configmap.enabled }}
+{{- if .Values.config }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ include "app-generic.fullname" . }}-configmap
+  name: {{ include "k8s-helm-templates.fullname" . }}
   labels:
-    app: {{ include "app-generic.name" . }}
+    {{- include "k8s-helm-templates.labels" . | nindent 4 }}
 data:
-  {{- range $key, $value := .Values.configmap.data }}
-  {{ $key }}: {{ $value | quote }}
-  {{- end }}
+  {{- toYaml .Values.config | nindent 2 }}
 {{- end }}
