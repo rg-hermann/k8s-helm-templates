@@ -36,6 +36,7 @@ spec:
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy | default "IfNotPresent" }}
           
+          {{- if or .Values.config .Values.secrets }}
           envFrom:
             {{- if .Values.config }}
             - configMapRef:
@@ -45,12 +46,15 @@ spec:
             - secretRef:
                 name: {{ include "k8s-helm-templates.fullname" . }}
             {{- end }}
+          {{- end }}
 
+          {{- if .Values.env }}
           env:
             {{- range $key, $value := .Values.env }}
             - name: {{ $key }}
               value: {{ $value | quote }}
             {{- end }}
+          {{- end }}
 
           ports:
             - name: http
@@ -61,13 +65,13 @@ spec:
             httpGet:
               path: /actuator/health/liveness
               port: http
-            initialDelaySeconds: {{ .Values.probes.liveness.initialDelay | default 30 }}
+            initialDelaySeconds: {{ (((.Values.probes).liveness).initialDelay) | default 30 }}
             periodSeconds: 10
           readinessProbe:
             httpGet:
               path: /actuator/health/readiness
               port: http
-            initialDelaySeconds: {{ .Values.probes.readiness.initialDelay | default 20 }}
+            initialDelaySeconds: {{ (((.Values.probes).readiness).initialDelay) | default 20 }}
             periodSeconds: 5
 
           resources:
