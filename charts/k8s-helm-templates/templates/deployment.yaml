@@ -24,7 +24,7 @@ spec:
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      serviceAccountName: {{ include "k8s-helm-templates.fullname" . }}
+      serviceAccountName: default
       
       securityContext:
         runAsNonRoot: true
