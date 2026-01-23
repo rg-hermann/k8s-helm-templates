@@ -1,4 +1,10 @@
 apiVersion: v2
-name: app-generic
-version: 0.1.0
-description: Chart genérico para deploy de aplicações containerizadas
+name: k8s-helm-templates
+description: Helm chart genérico para aplicações Java Bootstrap e microserviços K8s
+type: application
+
+version: 0.0.1
+
+appVersion: "1.0.0"
+
+home: https://github.com/rg-hermann/k8s-helm-templates
