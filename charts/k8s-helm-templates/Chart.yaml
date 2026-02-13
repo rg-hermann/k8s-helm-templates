@@ -1,10 +1,10 @@
 apiVersion: v2
 name: k8s-helm-templates
-description: Helm chart genérico para aplicações Java Bootstrap e microserviços K8s
+description: Helm chart genérico para aplicações Java Bootstrap, Python Bootstrap e microserviços K8s
 type: application
 
-version: 0.0.2
+version: 0.0.3
 
-appVersion: "0.0.2"
+appVersion: "0.0.3"
 
 home: https://github.com/rg-hermann/k8s-helm-templates

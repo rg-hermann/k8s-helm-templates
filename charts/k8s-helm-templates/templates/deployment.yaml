@@ -58,21 +58,26 @@ spec:
 
           ports:
             - name: http
-              containerPort: {{ .Values.service.port | default 8080 }}
+              containerPort: {{ .Values.containerPort | default 8080 }}
               protocol: TCP
 
           livenessProbe:
             httpGet:
-              path: /actuator/health/liveness
-              port: http
-            initialDelaySeconds: {{ (((.Values.probes).liveness).initialDelay) | default 30 }}
-            periodSeconds: 10
+              path: {{ .Values.livenessProbe.httpGet.path | default "/actuator/health/liveness" }}
+              port: {{ .Values.livenessProbe.httpGet.port | default .Values.containerPort | default 8080 }}
+            initialDelaySeconds: {{ .Values.livenessProbe.initialDelaySeconds | default 30 }}
+            periodSeconds: {{ .Values.livenessProbe.periodSeconds | default 10 }}
+            timeoutSeconds: {{ .Values.livenessProbe.timeoutSeconds | default 5 }}
+            failureThreshold: {{ .Values.livenessProbe.failureThreshold | default 3 }}
+
           readinessProbe:
             httpGet:
-              path: /actuator/health/readiness
-              port: http
-            initialDelaySeconds: {{ (((.Values.probes).readiness).initialDelay) | default 20 }}
-            periodSeconds: 5
+              path: {{ .Values.readinessProbe.httpGet.path | default "/actuator/health/readiness" }}
+              port: {{ .Values.readinessProbe.httpGet.port | default .Values.containerPort | default 8080 }}
+            initialDelaySeconds: {{ .Values.readinessProbe.initialDelaySeconds | default 20 }}
+            periodSeconds: {{ .Values.readinessProbe.periodSeconds | default 5 }}
+            timeoutSeconds: {{ .Values.readinessProbe.timeoutSeconds | default 5 }}
+            failureThreshold: {{ .Values.readinessProbe.failureThreshold | default 3 }}
 
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
