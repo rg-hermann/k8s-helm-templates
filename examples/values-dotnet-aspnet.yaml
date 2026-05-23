@@ -1,0 +1,89 @@
+# Example values for deploying a .NET Core / ASP.NET application
+
+image:
+  repository: ghcr.io/myorg/dotnet-api  # Change to your registry
+  tag: v1.0.0
+  pullPolicy: IfNotPresent
+
+replicaCount: 2
+
+containerPort: 80  # ASP.NET typically on port 80/443 in container
+
+# .NET Core exposes health endpoints
+probes:
+  enabled: true
+
+livenessProbe:
+  httpGet:
+    path: /health
+    port: 80
+  initialDelaySeconds: 30
+  periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 3
+
+readinessProbe:
+  httpGet:
+    path: /healthz
+    port: 80
+  initialDelaySeconds: 10
+  periodSeconds: 5
+  timeoutSeconds: 5
+  failureThreshold: 2
+
+resources:
+  limits:
+    cpu: 400m
+    memory: 512Mi
+  requests:
+    cpu: 200m
+    memory: 256Mi
+
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 80
+
+ingress:
+  enabled: true
+  className: nginx
+  hosts:
+    - host: api.example.com
+      paths:
+        - path: /
+          pathType: Prefix
+  tls:
+    - secretName: api-tls
+      hosts:
+        - api.example.com
+
+autoscaling:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 8
+  targetCPUUtilizationPercentage: 70
+
+env:
+  ASPNETCORE_ENVIRONMENT: "Production"
+  ASPNETCORE_URLS: "http://+:80"
+
+config:
+  appsettings.Production.json: |
+    {
+      "Logging": {
+        "LogLevel": {
+          "Default": "Information"
+        }
+      }
+    }
+
+secrets:
+  ConnectionStrings__DefaultConnection: "Server=mssql;Database=myapp;User Id=sa;Password=YourPasswordHere;"
+  JWT_SECRET: "your-jwt-secret"
+
+networkPolicy:
+  enabled: true
+
+podDisruptionBudget:
+  enabled: true
+  minAvailable: 1

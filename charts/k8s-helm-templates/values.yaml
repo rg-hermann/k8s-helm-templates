@@ -1,66 +1,186 @@
-image:
-  repository: nginx
-  pullPolicy: IfNotPresent
-  tag: "latest"
+# Default values for k8s-helm-templates.
+# This is a YAML-formatted file for deploying any microservice.
+# Works with: Python (FastAPI, Flask), Java (Spring Boot), Node.js (Express, Nest.js), 
+# Go, .NET, Frontend (React, Vue, Angular), or any containerized application.
 
+# Number of replicas (adjust per environment)
 replicaCount: 1
 
-# Container port (application listening port - typically 8080 for Java/Python)
+# Container image configuration
+# REQUIRED: Set image.repository for your specific microservice
+image:
+  repository: ""  # MUST be set: e.g., ghcr.io/myorg/my-app or docker.io/my-app
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion
+  tag: ""  # If empty, uses Chart.appVersion
+
+# Container port (application listening port)
+# Set to the port your application listens on (default 8080)
 containerPort: 8080
 
-resources:
-  limits:
-    cpu: 100m
-    memory: 128Mi
-  requests:
-    cpu: 100m
-    memory: 128Mi
+# Image pull secrets for private registries
+imagePullSecrets: []
 
+# Override full name
+nameOverride: ""
+fullnameOverride: ""
+
+# Service Account
+serviceAccount:
+  create: true
+  annotations: {}
+  name: ""
+
+# Pod annotations for additional metadata
+podAnnotations: {}
+
+# Pod security context
+podSecurityContext:
+  runAsNonRoot: true
+  runAsUser: 1000
+  fsGroup: 2000
+  seccompProfile:
+    type: RuntimeDefault
+
+# Container security context
+securityContext:
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop:
+      - ALL
+  readOnlyRootFilesystem: false
+  runAsNonRoot: true
+  runAsUser: 1000
+
+# Service configuration
 service:
   type: ClusterIP
   port: 80
   targetPort: 8080
+  annotations: {}
 
+# Ingress configuration
 ingress:
   enabled: false
   className: "nginx"
+  annotations: {}
+    # cert-manager.io/cluster-issuer: "letsencrypt-prod"
   hosts:
     - host: chart-example.local
       paths:
         - path: /
           pathType: Prefix
+  tls: []
+  #  - secretName: chart-example-tls
+  #    hosts:
+  #      - chart-example.local
 
-config: {}
-secrets: {}
-env: {}
+# Resource limits and requests
+resources:
+  limits:
+    cpu: 300m
+    memory: 384Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi
 
-# Liveness and Readiness probes configuration
+# Horizontal Pod Autoscaler
+autoscaling:
+  enabled: false  # Enable per environment (values-prod.yaml)
+  minReplicas: 1
+  maxReplicas: 5
+  targetCPUUtilizationPercentage: 70
+  targetMemoryUtilizationPercentage: 80
+
+# Pod Disruption Budget (for high availability)
+podDisruptionBudget:
+  enabled: false  # Enable in production for HA
+  minAvailable: 1
+  # maxUnavailable: 1
+
+# Network Policy (restrict traffic between pods)
+networkPolicy:
+  enabled: false  # Enable per environment for security
+
+# Health check probes (optional)
+# Set enabled: true ONLY if your app exposes health endpoints
+# Configure the path based on your framework:
+# - Spring Boot: /actuator/health/liveness
+# - FastAPI/Uvicorn: /health
+# - Express.js: /health
+# - ASP.NET: /healthz
+probes:
+  enabled: false  # MUST be explicitly enabled in values files
+  
 livenessProbe:
   httpGet:
-    path: /actuator/health/liveness
-    port: 8080
+    path: /health  # OVERRIDE in your values-{env}.yaml
+    port: 8080     # OVERRIDE with your containerPort
   initialDelaySeconds: 30
   periodSeconds: 10
   timeoutSeconds: 5
   failureThreshold: 3
+  successThreshold: 1
 
 readinessProbe:
   httpGet:
-    path: /actuator/health/readiness
-    port: 8080
-  initialDelaySeconds: 20
+    path: /health  # OVERRIDE in your values-{env}.yaml
+    port: 8080     # OVERRIDE with your containerPort
+  initialDelaySeconds: 10
   periodSeconds: 5
   timeoutSeconds: 5
-  failureThreshold: 3
+  failureThreshold: 2
+  successThreshold: 1
 
-autoscaling:
-  enabled: false
-  minReplicas: 1
-  maxReplicas: 3
-  targetCPUUtilizationPercentage: 80
+# Node affinity
+nodeSelector: {}
 
-# Pod annotations (optional)
-podAnnotations: {}
+# Tolerations for pod scheduling
+tolerations: []
 
-# Image pull secrets (for private registries)
-imagePullSecrets: []
+# Affinity rules
+affinity: {}
+  # podAntiAffinity:
+  #   preferredDuringSchedulingIgnoredDuringExecution:
+  #   - weight: 100
+  #     podAffinityTerm:
+  #       labelSelector:
+  #         matchExpressions:
+  #         - key: app.kubernetes.io/name
+  #           operator: In
+  #           values:
+  #           - "{{ include \"k8s-helm-templates.name\" . }}"
+  #       topologyKey: kubernetes.io/hostname
+
+# Environment variables
+env: {}
+  # LOG_LEVEL: "INFO"
+  # APP_ENV: "production"
+
+# ConfigMap data (key-value pairs)
+config: {}
+  # log_level: "INFO"
+  # debug: "false"
+
+# Secret data (key-value pairs, base64 encoded)
+secrets: {}
+  # database_password: "changeme"
+  # api_key: "secret-key"
+
+# Volume mounts
+volumeMounts: []
+
+# Volumes
+volumes: []
+
+# Lifecycle hooks
+lifecycle: {}
+  # preStop:
+  #   exec:
+  #     command: ["/bin/sh", "-c", "sleep 15"]
+
+# Extra labels
+extraLabels: {}
+
+# Extra annotations
+extraAnnotations: {}

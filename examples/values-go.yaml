@@ -1,0 +1,81 @@
+# Example values for deploying a Go application (gin, chi, echo, etc)
+
+image:
+  repository: ghcr.io/myorg/go-api  # Change to your registry
+  tag: v1.0.0
+  pullPolicy: IfNotPresent
+
+replicaCount: 2
+
+containerPort: 8000
+
+# Go applications typically expose /health endpoints
+probes:
+  enabled: true
+
+livenessProbe:
+  httpGet:
+    path: /health
+    port: 8000
+  initialDelaySeconds: 30
+  periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 3
+
+readinessProbe:
+  httpGet:
+    path: /readiness
+    port: 8000
+  initialDelaySeconds: 10
+  periodSeconds: 5
+  timeoutSeconds: 5
+  failureThreshold: 2
+
+resources:
+  limits:
+    cpu: 200m
+    memory: 256Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi
+
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 8000
+
+ingress:
+  enabled: true
+  className: nginx
+  hosts:
+    - host: api.example.com
+      paths:
+        - path: /
+          pathType: Prefix
+
+autoscaling:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 70
+
+env:
+  GIN_MODE: "release"  # For gin framework
+  LOG_LEVEL: "info"
+  PORT: "8000"
+
+config:
+  # Non-sensitive config
+  database:
+    pool_size: "10"
+
+secrets:
+  DATABASE_URL: "postgres://user:password@postgres:5432/myapp"
+  API_SECRET: "your-secret"
+
+networkPolicy:
+  enabled: true
+
+podDisruptionBudget:
+  enabled: true
+  minAvailable: 1
