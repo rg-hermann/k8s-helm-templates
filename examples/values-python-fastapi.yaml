@@ -1,0 +1,81 @@
+# Example values for deploying a FastAPI/Python application
+
+image:
+  repository: ghcr.io/myorg/python-api  # Change to your registry
+  tag: v1.0.0
+  pullPolicy: IfNotPresent
+
+replicaCount: 2
+
+containerPort: 8000  # FastAPI default port
+
+# FastAPI applications expose /health endpoints
+probes:
+  enabled: true
+
+livenessProbe:
+  httpGet:
+    path: /health
+    port: 8000
+  initialDelaySeconds: 30
+  periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 3
+
+readinessProbe:
+  httpGet:
+    path: /health
+    port: 8000
+  initialDelaySeconds: 10
+  periodSeconds: 5
+  timeoutSeconds: 5
+  failureThreshold: 2
+
+resources:
+  limits:
+    cpu: 300m
+    memory: 384Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi
+
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 8000
+
+ingress:
+  enabled: true
+  className: nginx
+  hosts:
+    - host: api.example.com
+      paths:
+        - path: /
+          pathType: Prefix
+
+autoscaling:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 8
+  targetCPUUtilizationPercentage: 70
+
+env:
+  LOG_LEVEL: "INFO"
+  ENVIRONMENT: "production"
+  WORKERS: "4"
+
+config:
+  # Non-sensitive config goes here
+  debug: "false"
+
+secrets:
+  # Sensitive data goes here
+  DATABASE_URL: "postgresql://user:password@postgres:5432/myapp"
+  API_SECRET_KEY: "your-secret-key"
+
+networkPolicy:
+  enabled: true
+
+podDisruptionBudget:
+  enabled: true
+  minAvailable: 1

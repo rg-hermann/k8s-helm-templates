@@ -1,0 +1,82 @@
+# Example values for deploying a Node.js Express application
+
+image:
+  repository: ghcr.io/myorg/nodejs-api  # Change to your registry
+  tag: v1.0.0
+  pullPolicy: IfNotPresent
+
+replicaCount: 2
+
+containerPort: 3000  # Express default port
+
+# Express applications typically expose /health endpoints
+probes:
+  enabled: true
+
+livenessProbe:
+  httpGet:
+    path: /health
+    port: 3000
+  initialDelaySeconds: 30
+  periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 3
+
+readinessProbe:
+  httpGet:
+    path: /healthz
+    port: 3000
+  initialDelaySeconds: 10
+  periodSeconds: 5
+  timeoutSeconds: 5
+  failureThreshold: 2
+
+resources:
+  limits:
+    cpu: 250m
+    memory: 256Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi
+
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 3000
+
+ingress:
+  enabled: true
+  className: nginx
+  hosts:
+    - host: api.example.com
+      paths:
+        - path: /
+          pathType: Prefix
+
+autoscaling:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 70
+
+env:
+  NODE_ENV: "production"
+  LOG_LEVEL: "info"
+  PORT: "3000"
+
+config:
+  # Non-sensitive config
+  features:
+    cache: "true"
+
+secrets:
+  DATABASE_URL: "mongodb://user:password@mongo:27017/myapp"
+  JWT_SECRET: "your-jwt-secret"
+  API_KEY: "your-api-key"
+
+networkPolicy:
+  enabled: true
+
+podDisruptionBudget:
+  enabled: true
+  minAvailable: 1
