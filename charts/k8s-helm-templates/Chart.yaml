@@ -3,8 +3,8 @@ name: k8s-helm-templates
 description: Helm chart genérico para aplicações Java Bootstrap, Python Bootstrap e microserviços K8s
 type: application
 
-version: 0.0.4
+version: 0.0.5
 
-appVersion: "0.0.4"
+appVersion: "0.0.5"
 
 home: https://github.com/rg-hermann/k8s-helm-templates
