@@ -192,6 +192,9 @@ env: {}
   # LOG_LEVEL: "INFO"
   # APP_ENV: "production"
 
+# Distribute replicas across nodes/zones when required
+topologySpreadConstraints: []
+
 # Existing ConfigMaps/Secrets to import as environment variables
 envFrom: []
   # - configMapRef:

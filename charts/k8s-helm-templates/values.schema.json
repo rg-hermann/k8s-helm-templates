@@ -67,6 +67,7 @@
     "nodeSelector": { "type": "object" },
     "tolerations": { "type": "array", "items": { "type": "object" } },
     "affinity": { "type": "object" },
+    "topologySpreadConstraints": { "type": "array", "items": { "type": "object" } },
     "env": { "type": "object" },
     "envFrom": { "type": "array", "items": { "type": "object" } },
     "config": { "type": "object" },
