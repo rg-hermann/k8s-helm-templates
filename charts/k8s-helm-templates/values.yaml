@@ -34,6 +34,9 @@ serviceAccount:
 # Pod annotations for additional metadata
 podAnnotations: {}
 
+# Additional pod labels
+podLabels: {}
+
 # Pod security context
 podSecurityContext:
   runAsNonRoot: true
@@ -51,6 +54,9 @@ securityContext:
   readOnlyRootFilesystem: false
   runAsNonRoot: true
   runAsUser: 1000
+
+# Pod termination grace period
+terminationGracePeriodSeconds: 60
 
 # Service configuration
 service:

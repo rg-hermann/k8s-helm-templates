@@ -28,3 +28,11 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 app.kubernetes.io/name: {{ include "k8s-helm-templates.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end -}}
+
+{{- define "k8s-helm-templates.serviceAccountName" -}}
+{{- if .Values.serviceAccount.create -}}
+{{- default (include "k8s-helm-templates.fullname" .) .Values.serviceAccount.name -}}
+{{- else -}}
+{{- default "default" .Values.serviceAccount.name -}}
+{{- end -}}
+{{- end -}}
