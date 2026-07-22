@@ -192,6 +192,11 @@ env: {}
   # LOG_LEVEL: "INFO"
   # APP_ENV: "production"
 
+# Existing ConfigMaps/Secrets to import as environment variables
+envFrom: []
+  # - configMapRef:
+  #     name: shared-config
+
 # ConfigMap data (key-value pairs)
 config: {}
   # log_level: "INFO"
@@ -207,6 +212,12 @@ volumeMounts: []
 
 # Volumes
 volumes: []
+
+# Optional initialization containers
+initContainers: []
+  # - name: migrate
+  #   image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+  #   command: ["/bin/sh", "-c", "./migrate"]
 
 # Lifecycle hooks
 lifecycle: {}
