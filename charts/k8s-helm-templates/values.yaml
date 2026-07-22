@@ -218,6 +218,14 @@ secrets: {}
   # database_password: "changeme"
   # api_key: "secret-key"
 
+# Prefer an externally managed Secret in production.
+secret:
+  create: false
+  existingSecret: ""
+  stringData: {}
+  annotations: {}
+  # External Secrets/Sealed Secrets can create the referenced Secret.
+
 # Volume mounts
 volumeMounts: []
 

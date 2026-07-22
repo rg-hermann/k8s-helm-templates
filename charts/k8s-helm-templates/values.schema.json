@@ -74,6 +74,15 @@
     "envFrom": { "type": "array", "items": { "type": "object" } },
     "config": { "type": "object" },
     "secrets": { "type": "object" },
+    "secret": {
+      "type": "object",
+      "properties": {
+        "create": { "type": "boolean" },
+        "existingSecret": { "type": "string" },
+        "stringData": { "type": "object" },
+        "annotations": { "type": "object" }
+      }
+    },
     "volumeMounts": { "type": "array", "items": { "type": "object" } },
     "volumes": { "type": "array", "items": { "type": "object" } },
     "initContainers": { "type": "array", "items": { "type": "object" } },

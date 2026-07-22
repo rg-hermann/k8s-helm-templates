@@ -71,15 +71,19 @@ spec:
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy | default "IfNotPresent" }}
           
-          {{- if or .Values.config .Values.secrets .Values.envFrom }}
+          {{- if or .Values.config .Values.secrets .Values.secret.create .Values.secret.existingSecret .Values.envFrom }}
           envFrom:
             {{- if .Values.config }}
             - configMapRef:
                 name: {{ include "k8s-helm-templates.fullname" . }}
             {{- end }}
-            {{- if .Values.secrets }}
+            {{- if or .Values.secrets .Values.secret.create }}
             - secretRef:
                 name: {{ include "k8s-helm-templates.fullname" . }}
+            {{- end }}
+            {{- with .Values.secret.existingSecret }}
+            - secretRef:
+              name: {{ . }}
             {{- end }}
             {{- with .Values.envFrom }}
             {{- toYaml . | nindent 12 }}
