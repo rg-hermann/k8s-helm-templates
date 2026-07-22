@@ -15,6 +15,9 @@ spec:
   {{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.replicaCount | default 1 }}
   {{- end }}
+  strategy:
+    {{- toYaml (.Values.strategy | default (dict "type" "RollingUpdate")) | nindent 4 }}
+  revisionHistoryLimit: {{ .Values.revisionHistoryLimit | default 10 }}
   selector:
     matchLabels:
       {{- include "k8s-helm-templates.selectorLabels" . | nindent 6 }}
