@@ -73,22 +73,14 @@ spec:
 
           {{- if .Values.probes.enabled }}
           livenessProbe:
-            httpGet:
-              path: {{ .Values.livenessProbe.httpGet.path }}
-              port: {{ .Values.livenessProbe.httpGet.port | default .Values.containerPort | default 8080 }}
-            initialDelaySeconds: {{ .Values.livenessProbe.initialDelaySeconds | default 30 }}
-            periodSeconds: {{ .Values.livenessProbe.periodSeconds | default 10 }}
-            timeoutSeconds: {{ .Values.livenessProbe.timeoutSeconds | default 5 }}
-            failureThreshold: {{ .Values.livenessProbe.failureThreshold | default 3 }}
+            {{- toYaml .Values.livenessProbe | nindent 12 }}
 
           readinessProbe:
-            httpGet:
-              path: {{ .Values.readinessProbe.httpGet.path }}
-              port: {{ .Values.readinessProbe.httpGet.port | default .Values.containerPort | default 8080 }}
-            initialDelaySeconds: {{ .Values.readinessProbe.initialDelaySeconds | default 10 }}
-            periodSeconds: {{ .Values.readinessProbe.periodSeconds | default 5 }}
-            timeoutSeconds: {{ .Values.readinessProbe.timeoutSeconds | default 5 }}
-            failureThreshold: {{ .Values.readinessProbe.failureThreshold | default 2 }}
+            {{- toYaml .Values.readinessProbe | nindent 12 }}
+          {{- with .Values.startupProbe }}
+          startupProbe:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
           {{- end }}
 
           resources:

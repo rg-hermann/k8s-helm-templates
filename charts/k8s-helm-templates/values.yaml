@@ -17,6 +17,7 @@ image:
 # Container port (application listening port)
 # Set to the port your application listens on (default 8080)
 containerPort: 8080
+# Examples: Spring Boot=8080, FastAPI=8000, Express=3000, frontend=80
 
 # Image pull secrets for private registries
 imagePullSecrets: []
@@ -64,6 +65,7 @@ service:
   port: 80
   targetPort: 8080
   annotations: {}
+  # Prefer targetPort: http when the container port is named.
 
 # Ingress configuration
 ingress:
@@ -145,6 +147,26 @@ readinessProbe:
   failureThreshold: 2
   successThreshold: 1
 
+# Optional startup probe. Supports httpGet, tcpSocket, grpc or exec.
+# startupProbe:
+#   httpGet:
+#     path: /health
+#     port: 8080
+#   failureThreshold: 30
+#   periodSeconds: 10
+startupProbe: {}
+
+# Probe examples:
+# Spring Boot:
+#   livenessProbe: { httpGet: { path: /actuator/health/liveness, port: 8080 } }
+#   readinessProbe: { httpGet: { path: /actuator/health/readiness, port: 8080 } }
+# FastAPI/Express:
+#   livenessProbe: { httpGet: { path: /health, port: 8000 } }
+# TCP service:
+#   readinessProbe: { tcpSocket: { port: 8080 } }
+# Command check:
+#   livenessProbe: { exec: { command: ["/bin/sh", "-c", "check-app"] } }
+
 # Node affinity
 nodeSelector: {}
 
@@ -197,3 +219,91 @@ extraLabels: {}
 
 # Extra annotations
 extraAnnotations: {}
+
+# -----------------------------------------------------------------------------
+# EXAMPLES: copie e descomente apenas o perfil da sua aplicação.
+# Os arquivos examples/values-*.yaml possuem as mesmas referências completas.
+# -----------------------------------------------------------------------------
+
+# Spring Boot / Java
+# image:
+#   repository: ghcr.io/myorg/java-api
+#   tag: v1.0.0
+# containerPort: 8080
+# probes:
+#   enabled: true
+# livenessProbe:
+#   httpGet: { path: /actuator/health/liveness, port: 8080 }
+# readinessProbe:
+#   httpGet: { path: /actuator/health/readiness, port: 8080 }
+# env:
+#   SPRING_PROFILES_ACTIVE: production
+#   JAVA_TOOL_OPTIONS: -XX:MaxRAMPercentage=75.0
+
+# Python / FastAPI
+# image:
+#   repository: ghcr.io/myorg/python-api
+#   tag: v1.0.0
+# containerPort: 8000
+# probes:
+#   enabled: true
+# livenessProbe:
+#   httpGet: { path: /health, port: 8000 }
+# readinessProbe:
+#   httpGet: { path: /health, port: 8000 }
+# env:
+#   LOG_LEVEL: INFO
+
+# Node.js / Express
+# image:
+#   repository: ghcr.io/myorg/node-api
+#   tag: v1.0.0
+# containerPort: 3000
+# probes:
+#   enabled: true
+# livenessProbe:
+#   httpGet: { path: /health, port: 3000 }
+# readinessProbe:
+#   httpGet: { path: /healthz, port: 3000 }
+
+# Go
+# image:
+#   repository: ghcr.io/myorg/go-api
+#   tag: v1.0.0
+# containerPort: 8080
+# probes:
+#   enabled: true
+# livenessProbe:
+#   httpGet: { path: /healthz, port: 8080 }
+# readinessProbe:
+#   httpGet: { path: /ready, port: 8080 }
+
+# .NET / ASP.NET Core
+# image:
+#   repository: ghcr.io/myorg/dotnet-api
+#   tag: v1.0.0
+# containerPort: 8080
+# probes:
+#   enabled: true
+# livenessProbe:
+#   httpGet: { path: /health, port: 8080 }
+# readinessProbe:
+#   httpGet: { path: /healthz, port: 8080 }
+
+# Frontend SPA / React, Vue, Angular, Svelte
+# image:
+#   repository: ghcr.io/myorg/frontend
+#   tag: v1.0.0
+# containerPort: 80
+# probes:
+#   enabled: false
+# service:
+#   port: 80
+#   targetPort: 80
+# ingress:
+#   enabled: true
+#   hosts:
+#     - host: app.example.com
+#       paths:
+#         - path: /
+#           pathType: Prefix
