@@ -106,7 +106,12 @@ podDisruptionBudget:
 
 # Network Policy (restrict traffic between pods)
 networkPolicy:
-  enabled: false  # Enable per environment for security
+  enabled: false
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress: []
+  egress: []
 
 # Health check probes (optional)
 # Set enabled: true ONLY if your app exposes health endpoints
