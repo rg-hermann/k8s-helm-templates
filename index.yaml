@@ -2,6 +2,18 @@ apiVersion: v1
 entries:
   k8s-helm-templates:
   - apiVersion: v2
+    appVersion: 0.0.6
+    created: "2026-07-23T00:43:19.051064575Z"
+    description: Helm chart genérico para aplicações Java Bootstrap, Python Bootstrap
+      e microserviços K8s
+    digest: 7daae0b565c394054263f80f730cb578d86d4cce5fa9c2967b337d511146528c
+    home: https://github.com/rg-hermann/k8s-helm-templates
+    name: k8s-helm-templates
+    type: application
+    urls:
+    - https://github.com/rg-hermann/k8s-helm-templates/releases/download/k8s-helm-templates-0.0.6/k8s-helm-templates-0.0.6.tgz
+    version: 0.0.6
+  - apiVersion: v2
     appVersion: 0.0.5
     created: "2026-07-22T23:59:41.851524233Z"
     description: Helm chart genérico para aplicações Java Bootstrap, Python Bootstrap
@@ -61,4 +73,4 @@ entries:
     urls:
     - https://github.com/rg-hermann/k8s-helm-templates/releases/download/k8s-helm-templates-0.0.1/k8s-helm-templates-0.0.1.tgz
     version: 0.0.1
-generated: "2026-07-22T23:59:41.851551594Z"
+generated: "2026-07-23T00:43:19.051089992Z"
