@@ -83,7 +83,7 @@ spec:
             {{- end }}
             {{- with .Values.secret.existingSecret }}
             - secretRef:
-              name: {{ . }}
+                name: {{ . }}
             {{- end }}
             {{- with .Values.envFrom }}
             {{- toYaml . | nindent 12 }}
